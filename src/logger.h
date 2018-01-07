@@ -47,7 +47,7 @@ typedef struct log_t{
     unsigned short save_lev;
 } log_printer;
 
-//extern struct log_t *log_writer;
+extern struct log_t *logger;
 
 int log_create(struct log_t **log,unsigned short print_lev,unsigned short save_lev,const char *filename);
 int log_destroy(struct log_t *log);

@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include "globe.h"
 #include "configloader.h"
+#include "logger.h"
+
+struct log_t *logger;
 
 #ifdef MSWIN32
 /*
@@ -42,6 +45,13 @@ int main(int argc,char **args) {
         exit (EXIT_FAILURE);
         return -1;
     }
+
+    if(log_create(&logger,LOG_LEVEL_ALL,LOG_LEVEL_SAVE_DEFAULT,sys_cfg.sys_log_file)!=0){
+        printf("logfile:[%s] load error! \n",sys_cfg.sys_log_file);
+        exit(EXIT_FAILURE);
+        return -1;
+    }
+
 	#ifdef MSWIN32
 	if(init_net()){
 		printf("WSAStartup fail!\r\n");
