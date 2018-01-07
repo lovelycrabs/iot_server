@@ -13,6 +13,9 @@
 #include "globe.h"
 
 #ifdef MSWIN32
+/*
+ * Description:init windows network
+ */
 int init_net(){
     WSADATA wsaData;
     return WSAStartup(MAKEWORD(2,2), &wsaData);
