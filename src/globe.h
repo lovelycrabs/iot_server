@@ -33,6 +33,8 @@ typedef int SOCKET;
 
 #endif // MSWIN32
 
+#define DEFAULT_CONFIG_FILE "home_center.conf"
+
 
 
 #endif // TYPES_H_INCLUDED
