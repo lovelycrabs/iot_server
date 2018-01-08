@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include "globe.h"
 #include "configloader.h"
 #include "logger.h"
@@ -30,21 +31,42 @@ int destroy_net(){
 }
 #endif
 
+void main_exit (int retval) {
+
+    log_destroy(logger);
+
+    //sens_close();
+    //sens_destroy();
+    //sys_destroy();
+	#ifdef MSWIN32
+	destroy_net();
+	#endif
+
+    exit (retval);
+}
+
+/* osetreni signalu */
+void signal_handler (int signum) {
+
+  main_exit (EXIT_SUCCESS);
+}
+
 int main(int argc,char **args) {
-    struct conf_t *confhd=NULL;
-    int c_code=0;
+    struct sys_config_t sys_cfg;
+    char *config_file=NULL;
     if(argc>1){
-        c_code = conf_parse(&confhd,args[1]);
+    	config_file=args[1];
     }
     else{
-        c_code = conf_parse(&confhd,DEFAULT_CONFIG_FILE);
+    	config_file=DEFAULT_CONFIG_FILE;
     }
 
-    if(c_code!=0){
-        printf("config file '%s' not found !\n",DEFAULT_CONFIG_FILE);
+    if(conf_load(&sys_cfg,config_file)){
+        printf("config file '%s' not found !\n",config_file);
         exit (EXIT_FAILURE);
         return -1;
     }
+
 
     if(log_create(&logger,LOG_LEVEL_ALL,LOG_LEVEL_SAVE_DEFAULT,sys_cfg.sys_log_file)!=0){
         printf("logfile:[%s] load error! \n",sys_cfg.sys_log_file);
@@ -54,20 +76,27 @@ int main(int argc,char **args) {
 
 	#ifdef MSWIN32
 	if(init_net()){
-		printf("WSAStartup fail!\r\n");
+		LOG_SYS(logger,"network startup fail");
 		exit(EXIT_FAILURE);
 		return -1;
 
 	}
 	#endif
 
-	printf("start success!\r\n");
+    /* registrace signal handleru */
+    signal (SIGINT, signal_handler);
+    signal (SIGTERM, signal_handler);
+    #ifndef MSWIN32
+    signal (SIGHUP, signal_handler);
+    signal (SIGPIPE, SIG_IGN);
+    #endif // MSWIN32
+
+	LOG_SYS(logger,"application startup success!");
 
 
 
-	#ifdef MSWIN32
-	destroy_net();
-	#endif
+	main_exit(EXIT_SUCCESS);
+
 
 	return EXIT_SUCCESS;
 }

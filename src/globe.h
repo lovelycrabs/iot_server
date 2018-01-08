@@ -35,6 +35,12 @@ typedef int SOCKET;
 
 #define DEFAULT_CONFIG_FILE "home_center.conf"
 
+#define IP_ADDR_STR_LENGTH 32
+#define FILE_NAME_STR_LENGTH 128
+#define NAME_STR_LENGTH 32
+#define ID_STR_LENGTH 32
+#define PASS_KEY_STR_LENGTH 64
+
 
 
 #endif // TYPES_H_INCLUDED

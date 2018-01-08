@@ -134,6 +134,7 @@ int conf_parse(struct conf_t **out,const char *filename){
         #ifndef NDEBUG
         printf("打开%s出错!\n",filename);
         #endif // NDEBUG
+        free(conf);
 
         return 1;
     }
@@ -214,5 +215,114 @@ int conf_destory(struct conf_t *conf){
     free(conf);
     //printf("free end !\n");
     return 0;
+}
+int conf_load(struct sys_config_t *params,const char *filename){
+	struct conf_t *config;
+	if(conf_parse(&config,filename)){
+		return -1;
+	}
+	const char *hvalue=NULL;
+
+	hvalue = conf_get_value(config,SENS_ADDR_KEY);
+	if(hvalue!=NULL)
+		strcpy(params->sens_addr,hvalue);
+	else
+		strcpy(params->sens_addr,SENS_DEFAULT_ADDR);
+
+
+	hvalue = conf_get_value(config,SENS_PORT_KEY);
+	if(hvalue!=NULL)
+		params->sens_port=atoi(hvalue);
+	else
+		params->sens_port=SENS_DEFAULT_PORT;
+
+	hvalue = conf_get_value(config,SENS_CONNECTION_SIZE_KEY);
+	if(hvalue!=NULL)
+		params->sens_connection_size=atoi(hvalue);
+	else
+		params->sens_connection_size=SENS_DEFAULT_CONNECTION_SIZE;
+
+	hvalue = conf_get_value(config,SENS_RECV_TIMEOUT_KEY);
+	if(hvalue!=NULL)
+		params->sens_recv_timeout=atoi(hvalue);
+	else
+		params->sens_recv_timeout=SENS_DEFAULT_RECV_TIMEOUT;
+
+	hvalue = conf_get_value(config,SENS_SEND_TIMEOUT_KEY);
+	if(hvalue!=NULL)
+		params->sens_send_timeout=atoi(hvalue);
+	else
+		params->sens_send_timeout=SENS_DEFAULT_SEND_TIMEOUT;
+	//
+	hvalue = conf_get_value(config,CTRL_RECV_TIMEOUT_KEY);
+	if(hvalue!=NULL)
+		params->ctrl_recv_timeout=atoi(hvalue);
+	else
+		params->ctrl_recv_timeout=CTRL_DEFAULT_RECV_TIMEOUT;
+
+	hvalue = conf_get_value(config,CTRL_SEND_TIMEOUT_KEY);
+	if(hvalue!=NULL)
+		params->ctrl_send_timeout=atoi(hvalue);
+	else
+		params->ctrl_send_timeout=CTRL_DEFAULT_SEND_TIMEOUT;
+	//
+
+	hvalue=conf_get_value(config,CTRL_ADDR_KEY);
+	if(hvalue!=NULL)
+		strcpy(params->ctrl_addr,hvalue);
+	else
+		strcpy(params->ctrl_addr,CTRL_DEFAULT_ADDR);
+
+	hvalue=conf_get_value(config,CTRL_PORT_KEY);
+	if(hvalue!=NULL)
+		params->ctrl_port=atoi(hvalue);
+	else
+		params->ctrl_port = CTRL_DEFAULT_PORT;
+
+	hvalue=conf_get_value(config,CTRL_CONNECTION_SIZE_KEY);
+	if(hvalue!=NULL)
+		params->ctrl_connection_size=atoi(hvalue);
+	else
+		params->ctrl_connection_size=CTRL_DEFAULT_CONNECTION_SIZE;
+
+	hvalue =conf_get_value(config,SYSTEM_LOG_KEY);
+	if(hvalue!=NULL)
+		strcpy(params->sys_log_file,hvalue);
+	else
+		strcpy(params->sys_log_file,SYSTEM_DEFUALT_LOG);
+
+	hvalue =conf_get_value(config,SYSTEM_SERVER_NAME_KEY);
+	if(hvalue!=NULL)
+		strcpy(params->sys_server_name,hvalue);
+	else
+		strcpy(params->sys_server_name,SYSTEM_DEFUALT_SERVER_NAME);
+
+	hvalue =conf_get_value(config,SENS_AUTH_TYPE_KEY);
+	if(hvalue!=NULL){
+		params->sens_auth_type=atoi(hvalue);
+
+	}
+	else
+		params->sens_auth_type=SENS_DEFAULT_AUTH_TYPE;
+
+	hvalue =conf_get_value(config,SYSTEM_DB_FILE_KEY);
+	if(hvalue!=NULL){
+		strcpy(params->sys_db_file,hvalue);
+
+	}
+	else
+		strcpy(params->sys_db_file,SYSTEM_DEFUALT_DB_FILE);
+
+	hvalue=conf_get_value(config,CTRL_AUTH_MODE_KEY);
+	if(hvalue!=NULL){
+		params->ctrl_auth_type=atoi(hvalue);
+
+	}
+	else
+		params->ctrl_auth_type=CTRL_DEFUALT_AUTH_MODE;
+
+
+	conf_destory(config);
+	return 0;
 }
 
